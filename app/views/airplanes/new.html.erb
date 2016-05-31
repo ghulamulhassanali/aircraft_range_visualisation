@@ -1,0 +1,40 @@
+<%= form_for :airplane, url: airplanes_path do |f| %>
+  <p>
+    <%= f.label :name %><br>
+    <%= f.text_field :name %>
+  </p>
+ 
+  <p>
+    <%= f.label :category %><br>
+    <%= f.text_field :category %>
+  </p>
+
+  <p>
+    <%= f.label :passengers %><br>
+    <%= f.text_field :passengers %>
+  </p>
+ 
+  <p>
+    <%= f.label :cabin_cubic_feet %><br>
+    <%= f.text_field :cabin_cubic_feet %>
+  </p>
+
+  <p>
+    <%= f.label :cargo_cubic_feet %><br>
+    <%= f.text_field :cargo_cubic_feet %>
+  </p>
+
+  <p>
+    <%= f.label :range %><br>
+    <%= f.text_field :range %>
+  </p>
+
+  <p>
+    <%= f.label :speed %><br>
+    <%= f.text_field :speed %>
+  </p>
+
+  <p>
+    <%= f.submit %>
+  </p>
+<% end %>

@@ -1,0 +1,423 @@
+<!--
+  Author: W3layouts
+  Author URL: http://w3layouts.com
+  License: Creative Commons Attribution 3.0 Unported
+  License URL: http://creativecommons.org/licenses/by/3.0/
+-->
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>Aircrafts Range Visualization</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="keywords" content="Aircrafts Range Visualization, Aircraft Range Tool, Aircraft, Range, Maps, Visualization" />
+  
+
+
+  <%= stylesheet_link_tag "bootstrap.min.css" %>
+  <%= stylesheet_link_tag "style.css" %>
+  <%= stylesheet_link_tag "font-awesome.css" %>
+  <%= stylesheet_link_tag "custom.css" %>
+  <%= stylesheet_link_tag "easy-autocomplete.min.css" %> 
+  <%= stylesheet_link_tag "easy-autocomplete.themes.min.css" %>
+  
+  
+  <%= stylesheet_link_tag "examples.css" %>
+  <style>
+    #map2 {
+      height: 100%;
+    }
+    .controls {
+      margin-top: 10px;
+      border: 1px solid transparent;
+      border-radius: 2px 0 0 2px;
+      box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      height: 32px;
+      outline: none;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    #pac-input {
+      background-color: #fff;
+      font-family: Roboto;
+      font-size: 15px;
+      font-weight: 300;
+      margin-left: 12px;
+      padding: 0 11px 0 13px;
+      text-overflow: ellipsis;
+      width: 300px;
+    }
+
+    #pac-input:focus {
+      border-color: #4d90fe;
+    }
+
+    .pac-container {
+      font-family: Roboto;
+    }
+
+    #type-selector {
+      color: #fff;
+      background-color: #4d90fe;
+      padding: 5px 11px 0px 11px;
+    }
+
+    #type-selector label {
+      font-family: Roboto;
+      font-size: 13px;
+      font-weight: 300;
+    }
+    #target {
+      width: 345px;
+    }
+    div.aircraft-details{     
+      display: none;
+      margin-top: -20px;
+      padding: 30px 10px 10px 23px;
+      font-size: smaller;
+    }
+    span.range{
+      font-size: smaller;
+    }
+    input#searchbox, input#search{
+      box-shadow: none;
+      outline: none;
+      border-radius: 0px;
+      font-family: 'Muli-Regular';
+      border-color: #ccc;
+      border-style: solid;
+      border-width: 1px;
+      width: 193px;
+    }
+
+  </style>
+  <!---->
+  
+
+</head>
+<body>
+  <div id="wrapper">
+    <nav class="navbar-default navbar-static-top" role="navigation">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        </button>
+        <h1> <a class="navbar-brand" href="index.html">Aircrafts Range Visualization</a></h1>
+      </div>
+      <div class=" border-bottom">
+        <div class="full-left">
+          <section style="top: 5px;position: relative;" class="full-top">
+            <button id="toggle"><i class="fa fa-arrows-alt"></i></button> 
+          </section>
+          <form class=" navbar-left-right">
+            <input type="text"  value="Search Airports" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Search Airports';}" id="search">
+            
+          </form>
+          <div class="clearfix"> </div>
+        </div>
+        <div class="drop-men">
+          <form class="text-sub">
+            <input type="submit" value="Reset">
+          </form>
+        </div>
+            
+        <!-- Collect the nav links, forms, and other content for toggling -->       
+        <div class="clearfix">
+        </div>
+        
+      <script type="text/javascript">
+      $( document ).ready(function() {
+        addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1);} 
+   
+   $(function () {
+      $('#supported').text('Supported/allowed: ' + !!screenfull.enabled);
+
+      if (!screenfull.enabled) {
+        return false;
+      }      
+      $('#toggle').click(function () {
+        screenfull.toggle($('#container')[0]);
+      });
+    });
+
+
+var categories=[];
+  <% @airplanes.each do |airplane| %>
+  var c_temp='<%= airplane.category %>';
+  
+  if(categories.indexOf(c_temp) == -1){
+    
+    categories.push(c_temp);
+    //console.log("check this "+c_temp);
+  }
+<% end %>
+
+for (var i = 0; i < categories.length; i++) {
+    //console.log(categories[i]);
+    
+
+    $('#side-menu').append('<li><a data-toggle="tooltip" title="Aircraft Category" data-placement="right" href="#" class=" hvr-bounce-to-right"><i class="fa fa-list nav_icon"></i> <span class="nav-label">'+ categories[i] + '</span></a></li><div id="'+categories[i].split(' ').join('')+'"></div>');
+  
+  };
+var id=1;
+<% @airplanes.each do |airplane| %>
+
+$("#" + "<%= airplane.category.encode!('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: ''); %>".split(" ").join("")).append('<div data-toggle="tooltip" title="Aircraft Model" data-placement="right" class="checkbox" style="margin-left: 16px;"><label style="font-size: smaller;"><input id="'+id+'" type="checkbox"><%= airplane.name.encode!("UTF-8", "binary", invalid: :replace, undef: :replace, replace: ""); %></label></div><div id="'+id+"-details"+'" class="aircraft-details" style="display: none;"><div><span class="range">Range: <span class="usRange" style="display: inline;"><%= airplane.range.to_s.encode!("UTF-8", "binary", invalid: :replace, undef: :replace, replace: ""); %></span><span class="metricRange" style="display: none;">1967 km</span></span><input type="hidden" id="rangeMeters" class="rangeMeters" value="1967000"></div><div class="sliderBlock"><div class="passengers">Passengers: <span class="number-of-passengers"><%= airplane.passengers.to_s.encode!("UTF-8", "binary", invalid: :replace, undef: :replace, replace: ""); %></span><span class="usWeight" style="display: inline;"> | <%= (airplane.passengers*200).to_s.encode!("UTF-8", "binary", invalid: :replace, undef: :replace, replace: ""); %> lbs Speed: <%= airplane.speed.to_s.encode!("UTF-8", "binary", invalid: :replace, undef: :replace, replace: ""); %> </span></div><div class="pilots"><form><input type="radio" id="pilot-one-citation-m2" name="pilot" value="1" class="radiobtn checked" style="display: inline;"><label for="pilot-one-citation-m2" class="css-label-radio checked" style="display: inline;">1 Pilot</label><br><input type="radio" id="pilot-two-citation-m2" name="pilot" value="2" class="radiobtn"><label for="pilot-two-citation-m2" class="css-label-radio" style="display: inline;">2 Pilots</label></form></div></div></div>');
+id++;
+<% end %>
+  });
+var totalChecked=1;
+var radius_p = 100;
+$(function () {
+  $("input[type='checkbox']").click( function(event){
+
+    if($(this).prop('checked')==true){
+
+      if(totalChecked>4){
+        alert("Please limit the number of aircraft selected to four.");
+        event.preventDefault();
+      }
+      else{
+        radius_p+=100;
+        if(airport==null){
+          alert("Please select a Starting Location first.");
+          event.preventDefault();
+        }
+        else{
+          checked_plane(radius_p,$(this).attr("id"));
+          totalChecked++;
+          $("#"+$(this).attr("id")+"-details").toggle("slow");
+        }
+      }
+    }
+    else{
+      uncheck_plane($(this).attr("id"));
+      totalChecked--;
+      $("#"+$(this).attr("id")+"-details").toggle("slow");
+    }
+
+      //alert($(this).attr("id"));
+
+  });
+
+}
+  );
+</script> 
+        <div class="navbar-default sidebar" role="navigation">
+          <div  class="sidebar-nav navbar-collapse">
+            <ul style="max-height:500px;overflow-y:scroll;" class="nav in" id="side-menu">
+
+            </ul>            
+          </div>
+        </div>
+    </nav>
+    <div id="page-wrapper" class="gray-bg dashbard-1">
+      <div class="content-main">
+        <!--grid-->
+        <div class="map-grid">
+          <div class="map-system">
+            <div class="col-md-12 map-1">
+              <div class="span11">
+                <input style="display:none;padding-left: 5px;" id="searchbox" class="controls"/>
+                <div id="map2"></div>
+              </div>
+              
+
+              <script type="text/javascript">
+                            var map;
+                            var airport;
+                            var colors = ['#D95459','#FFA800','#3BB2D0','#00FF00'];
+                            var color_status = [0,0,0,0];
+                            var marker;
+                            var plane_id;
+                            //var radius = [-1,-1,-1,-1];
+                            var planes = new Array();
+                            function put_marker(lat,lng,name){
+                                //alert(myLatLng.lat);
+                                airport = new google.maps.LatLng(lat, lng);
+                                marker = new google.maps.Marker({
+                                    position: airport,
+                                    map : map,
+                                    title: name
+                                });
+                                map.setCenter(airport);
+                                map.setZoom(4);
+                            }
+
+                            function draw_circle(i,rad){
+                                var circle = new google.maps.Circle({
+                                    strokeColor: colors[i],
+                                    strokeOpacity: 1.0,
+                                    strokeWeight: 2,
+                                    fillOpacity: 0.0,
+                                    map: map,
+                                    center: airport,
+                                    radius: parseInt(rad)*100
+                                });
+                                //map.fitBounds(circle.getBounds());
+                                return circle;
+                            }
+
+                            function checked_plane(rad,id){
+                                for(var i=0;i<4;i++){
+                                    if(color_status[i]==0){
+                                        color_status[i]=1;
+                                        break;
+                                    }
+                                }
+                                var circle = draw_circle(i,rad);
+                                var plane = {id : id, radius : rad, color: '#000000', circle : circle, color_index : i};
+                                var circleboundsNE = circle.getBounds().getNorthEast();
+                                var circleboundsSW = circle.getBounds().getSouthWest();
+                                var mapboundsNE = map.getBounds().getNorthEast();
+                                var mapboundsSW = map.getBounds().getSouthWest();
+                                if (circleboundsNE.lat()>mapboundsNE.lat()||circleboundsNE.lng()>mapboundsNE.lng()||circleboundsSW.lat()>mapboundsSW.lat()||circleboundsSW.lng()>mapboundsSW.lng())
+                                    map.fitBounds(circle.getBounds());
+                                planes.push(plane);
+                            }
+
+                            function uncheck_plane(id){
+                                plane_id = id;
+                                var index = planes.findIndex(find_plane);
+                                var circle = planes[index].circle;
+                                circle.setMap(null);
+                                color_status[planes[index].color_index]=0;
+                                planes.splice(index, 1);  
+                            }
+
+                            function find_plane(plane){
+                                return plane_id == plane.id;
+                            }
+
+                            $(document).ready(function(){
+                                var options = {
+                                    url: function(phrase) {
+                                        if (phrase.length>3)
+                                            return "http://api.geonames.org/search?q="+phrase+"&featureClass=S&featureCode=AIRP&type=json&username=guycook";
+                                        else
+                                            return "";
+                                    },
+                                    listLocation: "geonames",
+                                    getValue: "toponymName",
+                                    list: {
+                                        match: {
+                                            enabled: true
+                                        },
+                                        onClickEvent: function() {
+                                            put_marker($("#search").getSelectedItemData().lat,$("#search").getSelectedItemData().lng,$("#search").getSelectedItemData().toponymName);
+                                        },
+                                        maxNumberOfElements: 8
+                                    },
+                                    theme: "plate-dark"
+                                };
+                                $("#search").easyAutocomplete(options);
+                                var wrapper = document.getElementById('page-wrapper');
+                                var map = document.getElementById('map2');
+                                var sidePannel = document.getElementById('side-menu');
+                                $(window).resize(function(){
+                                    wrapper.style.minHeight = ($(window).height()-100) + 'px';
+                                    map.style.minHeight = ($(window).height()-200)+'px';
+                                    sidePannel.style.minHeight = ($(window).height()-120)+'px';
+                                });
+                                wrapper.style.minHeight = ($(window).height()-100) + 'px';
+                                map.style.minHeight = ($(window).height()-200)+'px';
+                                sidePannel.style.minHeight = ($(window).height()-120)+'px';
+                            });
+      function initAutocomplete() {
+          map = new google.maps.Map(document.getElementById('map2'), {
+              center: {lat: 0, lng: 0},
+              zoom: 3,
+              mapTypeId: google.maps.MapTypeId.ROADMAP
+          });
+        var options = {
+          types: ["(cities)"]
+        };
+        // Create the search box and link it to the UI element.
+        var input = document.getElementById('searchbox');
+        //var autocomplete = new google.maps.places.Autocomplete(input);
+            //autocomplete.bindTo('bounds', map);
+        var searchBox = new google.maps.places.Autocomplete(input, options);
+        //searchBox.setTypes("establishment");
+        map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+        // Bias the SearchBox results towards current map's viewport.
+        map.addListener('bounds_changed', function() {
+          searchBox.setBounds(map.getBounds());
+        });
+
+        var markers = [];
+        // Listen for the event fired when the user selects a prediction and retrieve
+        // more details for that place.
+        searchBox.addListener('place_changed', function() {
+          var places = searchBox.getPlace();
+          var place_array = [places];
+          if (places.length == 0) {
+            return;
+          }
+
+          // Clear out the old markers.
+          markers.forEach(function(marker) {
+            marker.setMap(null);
+          });
+          markers = [];
+
+          // For each place, get the icon, name and location.
+          var bounds = new google.maps.LatLngBounds();
+          place_array.forEach(function(place) {
+            var icon = {
+              url: place.icon,
+              size: new google.maps.Size(71, 71),
+              origin: new google.maps.Point(0, 0),
+              anchor: new google.maps.Point(17, 34),
+              scaledSize: new google.maps.Size(25, 25)
+            };
+
+            // Create a marker for each place.
+            markers.push(new google.maps.Marker({
+              map: map,
+              icon: icon,
+              title: place.name,
+              position: place.geometry.location
+            }));
+
+            if (place.geometry.viewport) {
+              // Only geocodes have viewport.
+              bounds.union(place.geometry.viewport);
+            } else {
+              bounds.extend(place.geometry.location);
+            }
+          });
+          map.fitBounds(bounds);
+        });
+      }
+                        </script>
+
+
+
+
+            </div>
+            <div class="clearfix"> </div>
+          </div>
+        </div>
+        <!--//grid-->
+        <!---->
+        <div class="copy">
+          <p> Designed and Developed by &copy; 2016 Placeholder</p>     </div>
+        </div>
+      </div>
+      <div class="clearfix"> </div>
+    </div>
+    <!---->
+    <!--scrolling js-->
+    
+    
+    <%= javascript_include_tag 'https://maps.googleapis.com/maps/api/js?key=AIzaSyBovCanBRl7Jzo34SmCyqoWZ_iS1xtPyJI&libraries=places&callback=initAutocomplete' %>
+
+    
+    <!--//scrolling js-->
+</body>
+</html>
